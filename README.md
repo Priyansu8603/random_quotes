@@ -10,7 +10,7 @@ RandomQuotes is a Flutter-based application created for users to get random quot
 ## Screenshots
 
 ### Home
-<img src="Screenshots/HomeScreen.jpg" alt="HomeScreen" width="300"/>
+<img src="Screenshots/Homescreen.jpg" alt="HomeScreen" width="300"/>
 <img src="Screenshots/Homescreen_Internet_Connected.jpg" alt="Home Screen No Internet" width="300"/>
 <img src="Screenshots/Homescreen_Internet_Unavailable.jpg" alt="Home Screen No Internet" width="300"/>
 
