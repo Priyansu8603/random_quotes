@@ -1,6 +1,10 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:random_quotes/Utils/AppColors.dart';
 import 'package:random_quotes/Utils/utils.dart';
+
+import '../ViewModel/HomePageViewModel.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,9 +24,12 @@ class _HomePageState extends State<HomePage> {
     _connectivity.onConnectivityChanged.listen((ConnectivityResult result) {
       _handleConnectivityChange(result);
     });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<HomePageViewModel>(context, listen: false).getRandomQuote();
+    });
   }
 
-  // Check connection status
+  // connection status
   Future<void> _checkConnectivity() async {
     final result = await _connectivity.checkConnectivity();
     _handleConnectivityChange(result,isInitialCheck: true);
@@ -51,8 +58,8 @@ class _HomePageState extends State<HomePage> {
           onWillPop: ()async=>false,
           child: AlertDialog(
             icon: Icon(Icons.signal_cellular_connected_no_internet_4_bar),
-            title:Text('Oops!',style: TextStyle(fontFamily: "Poppins",color: Colors.red,fontSize: 20),),
-            content:Text('The internet is not connected.',style: TextStyle(fontFamily: "Poppins",color: Colors.black54,fontSize: 15)),
+            title:Text('Oops!',style: TextStyle(fontFamily: "Poppins",color: AppColors.red,fontSize: 20),),
+            content:Text('The internet is not connected.',style: TextStyle(fontFamily: "Poppins",color: AppColors.black54,fontSize: 15)),
             actions: [
               TextButton(
                 onPressed: () {},
@@ -72,12 +79,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
   void _showInternetConnectedSnackbar() {
-    Utils.showSnackBar(context, "Internet is Connected !!", Colors.green);
+    Utils.showSnackBar(context, "Internet is Connected !!", AppColors.green);
   }
 
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<HomePageViewModel>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -86,7 +94,7 @@ class _HomePageState extends State<HomePage> {
           child: Text(
             'RANDOM QUOTES',
             style: TextStyle(
-              color: Colors.white,
+              color: AppColors.white,
               fontFamily: "Poppins",
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -118,18 +126,38 @@ class _HomePageState extends State<HomePage> {
                     padding: const EdgeInsets.all(20),
                     child: Column(
                       children:  [
+                        SizedBox(height: 20),
                         Align(
                           alignment: Alignment.topLeft,
                           child: Image.asset('Core/Assets/images/right.png'),
                         ),
                         SizedBox(height: 20),
-                        Text(
-                          'Genius is one percent inspiration and ninety-nine percent perspiration.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontFamily: 'Poppins',
+                        viewModel.isLoading
+                            ? Center(
+                          child: CircularProgressIndicator(
+                            color: Color(0XFFFFAFBD),
                           ),
+                        )
+                            : Column(
+                          children: [
+                            Text(
+                              viewModel.quote,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontFamily: 'Poppins',
+                              ),
+                            ),
+                            SizedBox(height: 20),
+                            Text(
+                              '- ${viewModel.author}',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: "Poppins",
+                                color: AppColors.black54,
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 20),
                         Align(
@@ -137,15 +165,6 @@ class _HomePageState extends State<HomePage> {
                           child: Image.asset('Core/Assets/images/left.png'),
                         ),
                         SizedBox(height: 20),
-                        Text(
-                          '- Thomas Edison',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: "Poppins",
-                            color: Colors.black54,
-                          ),
-                        ),
-                        SizedBox(height: 10)
                       ],
                     ),
                   ),
@@ -156,19 +175,19 @@ class _HomePageState extends State<HomePage> {
                   child: Container(
                     width: MediaQuery.of(context).size.width,
                     child: TextButton(
-                      onPressed: () {},
+                        onPressed: () => viewModel.getRandomQuote(),
                       style: TextButton.styleFrom(
                         backgroundColor: Color(0XFFEF9A9A),
                         padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15),
                         shape: RoundedRectangleBorder(
-                          side: BorderSide(color: Colors.white,width: 1.5),
+                          side: BorderSide(color: AppColors.white,width: 1.5),
                           borderRadius: BorderRadius.circular(25),
                         ),
                       ),
                       child: Text(
                         'Get Quotes',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: AppColors.white,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                           fontFamily: 'Poppins',
